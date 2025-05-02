@@ -1,9 +1,46 @@
-
 // src/components/courses/CourseDetails.jsx
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { WalletContext } from '../../context/WalletContext';
 
 const CourseDetails = ({ course }) => {
   const [activeTab, setActiveTab] = useState('overview');
+  const [isEnrolling, setIsEnrolling] = useState(false);
+  const navigate = useNavigate();
+  const { isConnected } = useContext(WalletContext) || { isConnected: false };
+
+  const handleEnrollClick = () => {
+    setIsEnrolling(true);
+    
+    // Logika yang sama dengan CourseCard.jsx
+    if (!isConnected) {
+      // Jika wallet tidak terhubung, arahkan ke halaman connect wallet
+      navigate('/connect-wallet', { 
+        state: { 
+          returnPath: `/courses/${course.id}`,
+          action: 'enroll'
+        } 
+      });
+    } else {
+      // Jika wallet terhubung, tambahkan kursus ke keranjang
+      console.log("Enrolling in course:", course.id);
+      
+      // Tambahkan ke keranjang
+      const cartItems = JSON.parse(localStorage.getItem('cart') || '[]');
+      if (!cartItems.some(item => item.id === course.id)) {
+        cartItems.push(course);
+        localStorage.setItem('cart', JSON.stringify(cartItems));
+      }
+      
+      // Arahkan ke halaman keranjang
+      navigate('/cart');
+    }
+    
+    // Reset isEnrolling setelah 1 detik
+    setTimeout(() => {
+      setIsEnrolling(false);
+    }, 1000);
+  };
 
   return (
     <div className="bg-gray-800 rounded-xl overflow-hidden border border-gray-700">
@@ -296,8 +333,12 @@ const CourseDetails = ({ course }) => {
             <div className="text-2xl font-bold text-white">{course.price} {course.currency}</div>
             <div className="text-sm text-gray-400">One-time payment, lifetime access</div>
           </div>
-          <button className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white py-3 px-6 rounded-lg transition-all duration-300 font-medium">
-            Enroll Now
+          <button 
+            className={`bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white py-3 px-6 rounded-lg transition-all duration-300 font-medium ${isEnrolling ? 'opacity-75 cursor-not-allowed' : ''}`}
+            onClick={handleEnrollClick}
+            disabled={isEnrolling}
+          >
+            {isEnrolling ? 'Enrolling...' : 'Enroll Now'}
           </button>
         </div>
         <div className="mt-6 space-y-3">

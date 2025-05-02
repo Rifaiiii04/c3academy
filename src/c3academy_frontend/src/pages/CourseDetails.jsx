@@ -183,4 +183,65 @@ const CourseDetailsPage = () => {
                   </button>
                   <button className="text-gray-400 hover:text-white">
                     <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M19
+                      <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" />
+                    </svg>
+                  </button>
+                  <button className="text-gray-400 hover:text-white">
+                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-2 16h-2v-6h2v6zm-1-6.891c-.607 0-1.1-.496-1.1-1.109 0-.612.492-1.109 1.1-1.109s1.1.497 1.1 1.109c0 .613-.493 1.109-1.1 1.109zm8 6.891h-1.998v-2.861c0-1.881-2.002-1.722-2.002 0v2.861h-2v-6h2v1.093c.872-1.616 4-1.736 4 1.548v3.359z" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            {/* Related Courses */}
+            {relatedCourses.length > 0 && (
+              <div className="bg-gray-800 rounded-xl overflow-hidden border border-gray-700">
+                <div className="p-6">
+                  <h3 className="text-lg font-bold text-white mb-4">Related Courses</h3>
+                  <div className="space-y-4">
+                    {relatedCourses.map(relatedCourse => (
+                      <a 
+                        key={relatedCourse.id} 
+                        href={`/courses/${relatedCourse.id}`}
+                        className="flex items-start p-3 hover:bg-gray-700 rounded-lg transition-all duration-200"
+                      >
+                        <div className="bg-gradient-to-br from-indigo-800 to-purple-700 w-16 h-16 rounded-lg flex items-center justify-center flex-shrink-0 mr-3">
+                          <div className="text-lg font-bold text-white opacity-70">
+                            {relatedCourse.title.split(' ').map(word => word[0]).join('')}
+                          </div>
+                        </div>
+                        <div>
+                          <h4 className="text-white font-medium mb-1">{relatedCourse.title}</h4>
+                          <div className="flex items-center text-sm">
+                            <div className="text-yellow-400 flex items-center mr-2">
+                              <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                              </svg>
+                              {relatedCourse.rating}
+                            </div>
+                            <div className="text-gray-400">{relatedCourse.duration}</div>
+                          </div>
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+      
+      <Footer />
+      
+      <WalletModal 
+        isOpen={isWalletModalOpen}
+        onClose={() => setIsWalletModalOpen(false)}
+      />
+    </div>
+  );
+};
+
+export default CourseDetailsPage;

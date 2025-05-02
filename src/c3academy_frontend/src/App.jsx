@@ -1,31 +1,45 @@
-import { useState } from 'react';
-import { c3academy_backend } from 'declarations/c3academy_backend';
+// src/App.jsx
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { WalletProvider } from './context/WalletContext';
+import { CourseProvider } from './context/CourseContext';
 
-function App() {
-  const [greeting, setGreeting] = useState('');
+// Import pages
+import Home from './pages/Home';
+import Courses from './pages/Courses';
+import CourseDetails from './pages/CourseDetails';
+import CoursePage from './pages/CoursePage';
+import Categories from './pages/Categories';
+import Cart from './pages/Cart';
+import ConnectWallet from './pages/ConnectWallet';
+import MyCourses from './pages/MyCourses';
+import NotFound from './pages/NotFound';
 
-  function handleSubmit(event) {
-    event.preventDefault();
-    const name = event.target.elements.name.value;
-    c3academy_backend.greet(name).then((greeting) => {
-      setGreeting(greeting);
-    });
-    return false;
-  }
+// Import global styles
+import './styles/globals.css';
 
+const App = () => {
   return (
-    <main>
-      <img src="/logo2.svg" alt="DFINITY logo" />
-      <br />
-      <br />
-      <form action="#" onSubmit={handleSubmit}>
-        <label htmlFor="name">Enter your name: &nbsp;</label>
-        <input id="name" alt="Name" type="text" />
-        <button type="submit">Click Me!</button>
-      </form>
-      <section id="greeting">{greeting}</section>
-    </main>
+    <WalletProvider>
+      <CourseProvider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/courses" element={<Courses />} />
+            <Route path="/courses/:courseId" element={<CourseDetails />} />
+            <Route path="/learn/:courseId/:lessonId?" element={<CoursePage />} />
+            <Route path="/categories" element={<Categories />} />
+            <Route path="/categories/:categoryId" element={<Courses />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/connect-wallet" element={<ConnectWallet />} />
+            <Route path="/my-courses" element={<MyCourses />} />
+            <Route path="/404" element={<NotFound />} />
+            <Route path="*" element={<Navigate to="/404" replace />} />
+          </Routes>
+        </Router>
+      </CourseProvider>
+    </WalletProvider>
   );
-}
+};
 
 export default App;

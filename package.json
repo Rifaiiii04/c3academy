@@ -14,5 +14,9 @@
   "type": "module",
   "workspaces": [
     "src/c3academy_frontend"
-  ]
+  ],
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.5",
+    "tailwindcss": "^4.1.5"
+  }
 }

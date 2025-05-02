@@ -1,0 +1,37 @@
+{
+  "canisters": {
+    "c3academy_backend": {
+      "main": "src/c3academy_backend/main.mo",
+      "type": "motoko"
+    },
+    "c3academy_frontend": {
+      "dependencies": [
+        "c3academy_backend"
+      ],
+      "source": [
+        "src/c3academy_frontend/dist"
+      ],
+      "type": "assets",
+      "workspace": "c3academy_frontend"
+    },
+    "internet_identity": {
+      "candid": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity.did",
+      "frontend": {},
+      "remote": {
+        "id": {
+          "ic": "rdmx6-jaaaa-aaaaa-aaadq-cai"
+        }
+      },
+      "type": "custom",
+      "wasm": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity_dev.wasm.gz"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}

@@ -1,12 +1,13 @@
 // src/hooks/useWallet.js
 import { useContext } from 'react';
 import { WalletContext } from '../context/WalletContext';
+import { formatWalletAddress } from '../utils/formatters';
 
 /**
  * Custom hook to access the WalletContext
  * 
  * Provides all wallet-related data and functions from the WalletContext
- * including connection state, balance, and transaction functions.
+ * including connection state and transaction functions.
  * 
  * @returns {Object} All values and functions from the WalletContext
  * 
@@ -15,7 +16,6 @@ import { WalletContext } from '../context/WalletContext';
  * const { 
  *   isConnected, 
  *   wallet, 
- *   balance,
  *   connectWallet 
  * } = useWallet();
  */
@@ -65,28 +65,6 @@ export const useWalletConnection = () => {
 };
 
 /**
- * Hook to access wallet balance
- * @returns {Object} Wallet balance and related functions
- */
-export const useWalletBalance = () => {
-  const { 
-    isConnected,
-    balance, 
-    getBalance 
-  } = useContext(WalletContext);
-  
-  if (balance === undefined) {
-    throw new Error('useWalletBalance must be used within a WalletProvider');
-  }
-  
-  return { 
-    isConnected,
-    balance, 
-    getBalance 
-  };
-};
-
-/**
  * Hook to access transaction functionality
  * @returns {Object} Transaction functions
  */
@@ -101,21 +79,10 @@ export const useTransactions = () => {
     throw new Error('useTransactions must be used within a WalletProvider');
   }
   
-  /**
-   * Helper function to check if a user can afford a transaction
-   * @param {number} amount - Amount to check
-   * @returns {boolean} Whether the user has enough balance
-   */
-  const canAfford = (amount) => {
-    if (!isConnected || !wallet) return false;
-    return balance >= amount;
-  };
-  
   return { 
     isConnected,
     wallet,
-    sendTransaction,
-    canAfford
+    sendTransaction
   };
 };
 
@@ -137,15 +104,12 @@ export const useConnectButton = () => {
   }
   
   // Format wallet address for display
-  const formatAddress = () => {
-    if (!wallet || !wallet.address) return '';
-    return `${wallet.address.substring(0, 6)}...${wallet.address.substring(wallet.address.length - 4)}`;
-  };
+  const displayAddress = wallet ? formatWalletAddress(wallet.address) : '';
   
   return {
     isConnected,
     connecting,
-    displayAddress: formatAddress(),
+    displayAddress,
     connectWallet,
     disconnectWallet
   };

@@ -103,7 +103,7 @@ const CourseDetailsPage = () => {
           
           <div className="lg:col-span-1">
             {/* Course Purchase Card */}
-            <div className="bg-gray-800 rounded-xl overflow-hidden border border-gray-700 mb-8 sticky top-8">
+            <div className="bg-gray-800 rounded-xl overflow-hidden border border-gray-700 mb-8 sticky top-8 z-10">
               <div className="p-6">
                 <div className="flex justify-between items-center mb-4">
                   <div className="text-2xl font-bold text-white">{course.price} {course.currency}</div>
@@ -114,6 +114,7 @@ const CourseDetailsPage = () => {
                   className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white py-3 px-4 rounded-lg transition-all duration-300 font-medium mb-4"
                 >
                   {isConnected ? 'Enroll Now' : 'Connect Wallet to Enroll'}
+                  
                 </button>
                 
                 <div className="text-sm text-gray-400 text-center mb-6">

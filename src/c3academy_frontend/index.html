@@ -1,18 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>IC Hello Starter</title>
+    <base href="/" />
+    <link rel="icon" href="/favicon.ico" />
+    <!-- Plug Wallet SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@psychedelic/plug-connect/dist/index.umd.js"></script>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width" />
-  <title>IC Hello Starter</title>
-  <base href="/" />
-  <link rel="icon" href="/favicon.ico" />
-</head>
+    <!-- Stoic Wallet SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@dfinity/agent/dist/index.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@dfinity/candid/dist/index.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@dfinity/principal/dist/index.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@dfinity/auth-client/dist/index.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-sha256/src/sha256.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tweetnacl/nacl-fast.min.js"></script>
 
-<body>
-  
-  <div id="root"></div>
-  <script type="module" src="/src/index.jsx"></script>
-</body>
+    <!-- Tambahkan script ini di bagian <head> file index.html -->
 
+    <!-- CDN untuk API wallet (opsional, untuk development) -->
+    
+<!-- Script untuk detect wallet extensions -->
+<script>
+  window.addEventListener('load', function() {
+    // Setup fallback untuk wallet yang tidak tersedia
+    window.setupWalletFallbacks = function() {
+      // Inisialisasi objek ic jika belum ada
+      window.ic = window.ic || {};
+      
+      // Setup Plug Wallet fallback
+      if (!window.ic.plug) {
+        window.ic.plug = {
+          isConnected: false,
+          requestConnect: function() { 
+            console.log('[Fallback] Plug wallet connection requested');
+            return Promise.resolve(true); 
+          },
+          requestBalance: function() {
+            console.log('[Fallback] Plug wallet balance requested');
+            return Promise.resolve([{ amount: 100 }]);
+          },
+          agent: {
+            getPrincipal: function() {
+              return { 
+                toText: function() { return 'demo-principal-id'; } 
+              };
+            }
+          }
+        };
+      }
+    };
+    
+    // Log ketersediaan wallet
+    console.log('Checking for wallet extensions...');
+    const wallets = {
+      plug: !!(window.ic && window.ic.plug),
+      stoic: !!window.StoicIdentity,
+      infinity: !!window.infinityWallet,
+      bitfinity: !!window.bitfinityWallet
+    };
+    console.log('Available wallet extensions:', wallets);
+    
+    // Setup fallback jika tidak ada wallet
+    if (!wallets.plug && !wallets.stoic && !wallets.infinity && !wallets.bitfinity) {
+      console.log('No wallet extensions detected, setting up fallbacks...');
+      window.setupWalletFallbacks();
+    }
+  });
+</script>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/index.jsx"></script>
+  </body>
 </html>

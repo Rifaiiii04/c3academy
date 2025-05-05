@@ -100,13 +100,33 @@ const enrollInCourse = async (courseId, walletAddress) => {
   
   // Process payment via wallet service
   try {
+    // Get current wallet data from localStorage
+    const walletData = JSON.parse(localStorage.getItem('walletData') || '{}');
+    const currentBalance = parseFloat(localStorage.getItem('walletBalance') || '0');
+    
+    // Check if user has enough balance
+    if (currentBalance < course.price) {
+      throw new Error('Insufficient balance to enroll in this course');
+    }
+    
     const transactionResult = await sendTransaction(
       walletAddress, 
       COURSE_PROVIDER_ADDRESS, 
       course.price
     );
     
-    // In a real implementation, we would record the enrollment in a database
+    // Update wallet balance in localStorage
+    const newBalance = currentBalance - course.price;
+    localStorage.setItem('walletBalance', newBalance.toString());
+    
+    // Update wallet data
+    const updatedWalletData = {
+      ...walletData,
+      balance: newBalance
+    };
+    localStorage.setItem('walletData', JSON.stringify(updatedWalletData));
+    
+    // Record enrollment
     const enrollmentResult = {
       courseId,
       course: course.title,
@@ -117,7 +137,7 @@ const enrollInCourse = async (courseId, walletAddress) => {
       currency: 'ICP'
     };
     
-    // Store enrollment in localStorage for demo purposes
+    // Store enrollment in localStorage
     const enrollments = JSON.parse(localStorage.getItem('enrollments') || '[]');
     enrollments.push(enrollmentResult);
     localStorage.setItem('enrollments', JSON.stringify(enrollments));

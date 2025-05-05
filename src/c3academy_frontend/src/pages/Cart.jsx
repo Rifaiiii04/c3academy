@@ -7,9 +7,14 @@ import Button from '../components/common/Button';
 import Loader from '../components/common/Loader';
 import { WalletContext } from '../context/WalletContext';
 
+// Course provider address (where payments are sent)
+const COURSE_PROVIDER_ADDRESS = '0x3a8d29c5DC4cBcA38C9a36726AC56065A4F7A0Fb';
+
 const Cart = () => {
   const navigate = useNavigate();
-  const { isConnected, wallet, balance } = useContext(WalletContext);
+  
+  // Get all necessary functions and values from WalletContext 
+  const { isConnected, wallet, balance, makeTransaction } = useContext(WalletContext);
   
   const [cartItems, setCartItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -67,14 +72,37 @@ const Cart = () => {
     setError(null);
 
     try {
-      // Simulate transaction processing
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Use the makeTransaction function from WalletContext to actually reduce the balance
+      const transactionResult = await makeTransaction(
+        cartTotal,
+        COURSE_PROVIDER_ADDRESS,
+        `Purchase of ${cartItems.length} course${cartItems.length > 1 ? 's' : ''}`
+      );
       
-      // In a real app, this would process each enrollment through the blockchain
+      if (!transactionResult || !transactionResult.success) {
+        throw new Error(transactionResult?.error || 'Transaction failed');
+      }
       
       // Save purchased courses to localStorage for demo purposes
       // This simulates enrolling in the courses
-      localStorage.setItem('purchased_courses', JSON.stringify(cartItems));
+      const purchasedCourses = JSON.parse(localStorage.getItem('purchased_courses') || '[]');
+      const updatedPurchasedCourses = [...purchasedCourses, ...cartItems];
+      localStorage.setItem('purchased_courses', JSON.stringify(updatedPurchasedCourses));
+      
+      // Store enrollment details with transaction info
+      const enrollments = JSON.parse(localStorage.getItem('enrollments') || '[]');
+      
+      const newEnrollments = cartItems.map(course => ({
+        courseId: course.id,
+        course: course.title,
+        walletAddress: wallet.address,
+        enrollmentDate: new Date().toISOString(),
+        transactionId: transactionResult.transaction.id,
+        amount: course.price,
+        currency: 'ICP'
+      }));
+      
+      localStorage.setItem('enrollments', JSON.stringify([...enrollments, ...newEnrollments]));
       
       // Clear cart after successful checkout
       localStorage.setItem('cart', JSON.stringify([]));

@@ -2,10 +2,31 @@
 import React, { useContext } from 'react';
 import { WalletContext } from '../../context/WalletContext';
 
-const ConnectWallet = () => {
-  const { isConnected, wallet, balance, connecting, connectWallet, disconnectWallet } = useContext(WalletContext);
+const ConnectWallet = ({ openWalletModal }) => {
+  const { 
+    isConnected, 
+    wallet, 
+    balance, 
+    connecting, 
+    disconnectWallet, 
+    walletType
+  } = useContext(WalletContext);
 
-  if (isConnected) {
+  // Fungsi untuk format alamat wallet
+  const formatAddress = (address) => {
+    if (!address) return '';
+    
+    if (address.startsWith('0x')) {
+      // Format Ethereum address
+      return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
+    } else {
+      // Format ICP principal ID
+      return `${address.substring(0, 5)}...${address.substring(address.length - 3)}`;
+    }
+  };
+
+  // Tampilkan info wallet jika sudah terhubung
+  if (isConnected && wallet) {
     return (
       <div className="flex items-center">
         <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg p-2 mr-3 text-xs">
@@ -14,19 +35,22 @@ const ConnectWallet = () => {
         <div className="relative group">
           <button
             className="flex items-center bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-2 px-4 rounded-lg hover:from-indigo-600 hover:to-purple-600 transition-all duration-300"
-            onClick={() => disconnectWallet()}
           >
-            <span className="mr-2">{wallet.address.substring(0, 6)}...{wallet.address.substring(38)}</span>
+            <span className="mr-2">{formatAddress(wallet.address)}</span>
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </button>
           <div className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg py-1 z-50 hidden group-hover:block">
+            <div className="px-4 py-2 text-sm text-gray-400">
+              Terhubung dengan {walletType}
+            </div>
+            <div className="border-t border-gray-700"></div>
             <button
               className="block w-full text-left px-4 py-2 text-sm text-white hover:bg-gray-700"
               onClick={() => disconnectWallet()}
             >
-              Disconnect Wallet
+              Putuskan Koneksi
             </button>
           </div>
         </div>
@@ -34,10 +58,11 @@ const ConnectWallet = () => {
     );
   }
 
+  // Tampilkan tombol connect jika belum terhubung
   return (
     <button
       className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-2 px-4 rounded-lg hover:from-indigo-600 hover:to-purple-600 transition-all duration-300 flex items-center"
-      onClick={() => connectWallet()}
+      onClick={openWalletModal}
       disabled={connecting}
     >
       {connecting ? (
@@ -46,7 +71,7 @@ const ConnectWallet = () => {
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
-          Connecting...
+          Menghubungkan...
         </>
       ) : (
         <>
